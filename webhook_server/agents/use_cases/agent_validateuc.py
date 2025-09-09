@@ -7,31 +7,8 @@ from langchain_core.output_parsers import StrOutputParser
 persona_message_validateuc = SystemMessage(
     content=(
     """
-    You are a Use Case Validation Agent.  
-    Your task is to review and correct use case descriptions using the refined requirements and the domain description.
-
-    **Response Format**:
-    - Plain text;
-    - For each use case: Name, Actors, Preconditions, Normal Flow of Events, Alternative / Exception Flows, Related Requirements, and Classes;
-    - A "Questions and Validations" block at the end, with doubts, assumptions, or inconsistencies.
-
-    **Important**: Your entire response must be written in **Portuguese**.
-    """
-    ) #**Important**: The entire response must be in Portuguese.
-)
-
-# Prompt template
-validateuc_prompt = ChatPromptTemplate.from_messages([
-    persona_message_validateuc,
-    ("human", 
-    """
     You are a **Use Case Validation Agent**.  
     Your task is to review and validate a list of use cases, ensuring consistency, correctness, and alignment with the refined requirements and the project’s domain description.
-
-    You will receive:  
-    - A list of use cases, each with: Name, Actors, Preconditions, Normal Flow of Events, Alternative / Exception Flows, Related Requirements, and Classes (which may be empty): {ident_events};  
-    - A refined version of the system's requirements: {report};  
-    - A domain description (minimundo) that explains the context of the system: {minimundo}.
 
     ---
 
@@ -39,7 +16,6 @@ validateuc_prompt = ChatPromptTemplate.from_messages([
     - Carefully analyze each use case and verify if:  
     1. The **flow of events** aligns with the system’s goals and logic;  
     2. The **actors** make sense considering the system boundary and the description of the domain;  
-    3. The **preconditions** are meaningful and necessary;  
     4. The **related requirements** listed are appropriate and relevant;  
     5. There are no **missing or redundant cases**;  
     6. No essential behavior described in the refined requirements or minimundo was left unmodeled.  
@@ -55,27 +31,79 @@ validateuc_prompt = ChatPromptTemplate.from_messages([
     - Add a final section titled **Questions and Validations** with any doubts, inconsistencies, or assumptions made.
 
     <DESIRED OUTPUT EXAMPLE>
-    ## Use Cases Description
-    - **Name:** User Login  
-    - **Actors:**  
-        - User  
-        - System  
-    - **Preconditions:**  
-        - The user must be registered  
-    - **Normal Flow of Events:**  
-        - User navigates to the login page  
-        - Enters email and password  
-        - Clicks "Login"  
-        - System validates credentials  
-        - User is redirected to the homepage  
-    - **Alternative / Exception Flows:**  
-        - Invalid credentials → System displays an error message  
-        - Missing fields → System prompts for required input  
-    - **Related Requirements:**  
-        - RF01  
-    - **Classes:**    
+    # UC09 - Process Payments via Banestes
+    **Actors:** GEPOF Manager
+    **Related Requirements:** FR12, FR13, FR14, FR15, FR16, FR17, FR18, FR19
+    **Classes:**
 
-    ## Questions and Vallidations
+
+    ## E036 - Monitor Payment Batches
+
+    **Objective:**  
+    Monitor the payment batches sent and the return files received from a payroll.
+
+    ---
+
+    ## Main Flow
+
+    1. The **GEPOF manager** views the details of batches from a payroll with status **“Authorized”**.  
+
+    2. The system displays the following payroll information:  
+      - **Payroll:** shows the type and month of the payroll to be monitored.  
+      - **Total Scholarships:** total number of scholarships to be paid.  
+      - **Total Payroll Amount:** sum of all scholarship amounts in the payroll.  
+      - **Generation Date:** date the payroll was generated.  
+      - **Authorization Date:** date the payroll was authorized.  
+      - **Payment Date:** date defined for the payroll payment.  
+      - **Payroll Status:** current status of the payroll.  
+      - **Warning:** if there are fewer than 5 business days until the payment date, the system informs:  
+        > *X days left until the payment date. Request funds from Bandes to avoid payment delays.*  
+        In addition, the system sends notifications to **GEPOF** until the payment date is reached.  
+
+    3. The system displays a table with the totals of scholarships and values:  
+      - To be paid via **Banestes**  
+      - To be paid via **Bandes**  
+      - Not yet scheduled  
+      > The sum of these values must match the payroll totals.  
+
+      - The **GEPOF manager** can view payment details accounted for **Bandes** via the event *Detail alternative release guide*, if at least one payment has been accounted for this modality.  
+
+    4. The system displays a history of the payroll batches with the following information:  
+      - **Batch:** batch identification number.  
+      - **Sent Date:** date and time the batch was created and sent to Banestes.  
+      - **Last Update:** date and time of the last status update.  
+      - **Status:** current state of the batch.  
+      - **Sent:** number of payments sent for scheduling.  
+      - **Scheduled:** number of payments successfully scheduled.  
+      - **Scheduled Amount:** sum of the successfully scheduled payments.  
+      - **Errors:** number of records with errors (not scheduled).  
+
+      > Items “a” to “e” are obtained when generating the batch.  
+      > Items “f” to “h” are obtained from processing the return file.  
+      > The **GEPOF manager** can also download the batch and return files.  
+
+    5. If the latest batch has a return file, the system displays the records with detected errors:  
+      - **Name:** scholar’s name.  
+      - **Registration:** scholar’s scholarship allocation code.  
+      - **Call for Proposals:** name of the call for proposals for the scholar’s allocation.  
+      - **Scholarship Type:** type of scholarship for the allocation.  
+      - **Errors:** list of error codes returned for this record.  
+      - **Actions:** transfer the payment to the alternative release guide via the event *Forward to alternative release guide*.  
+      - **Error Status:** identifies whether the errors have been resolved by the technical team.  
+
+    6. If the latest batch has a return file **and** there are still unscheduled records, the **GEPOF manager** can generate a new batch via the event *Generate Payment Batch*.  
+
+    ---
+
+    ## Alternative Flow
+
+    **3a.** If no batches have yet been generated, the system displays the message:  
+
+    > *“At the moment, there are no batches available to be monitored. You may create a new batch.”*  
+
+    The **GEPOF manager** can then execute the event *Generate Payment Batch*.    
+
+    ## Questions and Validations
 
     1. What are the different types of users that need access to the system, and do they require different authentication mechanisms (e.g., two-factor authentication, SSO)?
     2. If a user enters incorrect credentials three times in a row, should the system temporarily lock the account or display a security warning?
@@ -83,6 +111,18 @@ validateuc_prompt = ChatPromptTemplate.from_messages([
     <END OF EXAMPLE>
 
     **Important**: Your entire response must be written in **Portuguese**.
+    """
+    )
+)
+
+# Prompt template
+validateuc_prompt = ChatPromptTemplate.from_messages([
+    persona_message_validateuc,
+    ("human", 
+    """
+    Use cases and its events: {ident_events};  
+    Requirements: {report};  
+    Miniworld: {minimundo}.
     """
     )
 ])

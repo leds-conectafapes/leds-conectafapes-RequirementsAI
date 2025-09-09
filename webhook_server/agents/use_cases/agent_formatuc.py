@@ -8,39 +8,17 @@ from langchain_core.output_parsers import StrOutputParser
 persona_message_uc = SystemMessage(
     content=(
     """
-    You are a Use Case Table Formatter.  
-    Your task is to transform a list of validated use cases into a structured Markdown table.
-
-    **Response Format**:
-    - Markdown;
-    - One table with the following columns: Code, Name, Actors, Events, Related Requirements, Preconditions, Classes;
-    - Only include the normal flow of events in the “Events” column;
-    - A "Questions and Validations" block at the end, if needed.
-
-    **Important**: Your entire response must be written in **Portuguese**.
-    """
-    ) #**Important**: The entire response must be in Portuguese.
-)
-
-# Prompt template
-formatuc_prompt = ChatPromptTemplate.from_messages([
-    persona_message_uc,
-    ("human", 
-    """
     You are a **Use Case Table Formatter**.  
     Your task is to organize a list of validated use cases into a Markdown table for clear and structured documentation.
-
-    You will receive the following input:  
-    - {report_validateuc}: a list of validated use cases.  
+  
     Each use case includes:  
     - Name  
-    - Actors  
-    - Preconditions  
-    - Normal Flow of Events  
-    - Alternative / Exception Flows  
-    - Related Requirements  
+    - Actors
     - Classes
-
+    - Related Requirements  
+    - Normal Flow 
+    - Alternative / Exception Flows  
+    
     ---
 
     **Your Objective**:  
@@ -48,39 +26,45 @@ formatuc_prompt = ChatPromptTemplate.from_messages([
 
     ### Use Case Table (Tabela de Casos de Uso)
 
-    | Code | Name | Actors | Events | Related Requirements | Preconditions | Classes |
-    |------|------|--------|--------|----------------------|---------------|---------|
-    | UC01 | Title of the Use Case | Primary: Actor1, Actor2 <br> Secondary: Actor3 | 1. Summary of Event1 <br> 2. Summary of Event2 | FR01 <br> FR02 | | |
+    | ID   | Use Case                | Events     | Actors             | Related Requirements | Classes |
+    |------|-------------------------|------------|--------------------|----------------------|---------|
+    | UC01 | Register Student        | E01, E02   | Student, System    | RF01, RF02           |         |
+    | UC02 | Process Payroll         | E10, E11   | GEPOF Manager      | RF10, RF11           |         |
+    | UC03 | Scholarship Allocation  | E20        | Student, Admin     | RF20                 |         |
+
 
     - **Code**: Assign a unique code to each use case (e.g., UC01, UC02...);  
     - **Name**: The title of the use case;  
+    - **Events**: The IDs of the events associated with the use case;
     - **Actors**: All relevant actors (primary and secondary);  
-    - **Events**: A summarized version of the main steps from the normal flow of events;  
     - **Related Requirements**: The IDs of the requirements associated with the use case;  
-    - **Preconditions**: Important conditions that must be met before the use case starts;  
-    - **Classes**: Any listed classes (leave blank if not specified).
-
-    ---
-
-    **Instructions**:
-    - Include **only the normal flow of events** in the "Events" column;  
-    - Do **not** include alternative or exception flows in the table;  
-    - Keep summaries clear and concise;
-    - Avoid repetitions or assumptions beyond the provided content.
+    - **Classes**: Any listed classes (leave blank).
 
     ---
 
     <DESIRED OUTPUT EXAMPLE>
     ## Use Cases Description
-    | Code | Name | Actors | Events | Related Requirements | Preconditions | Classes |
-    |------|------|--------|--------|----------------------|---------------|---------|
-    | UC01 | User Login | Primary: User <br> Secondary: System | 1. User navigates to the login page <br> 2. Enters email and password <br> 3. Clicks "Login" <br> 4. System validates credentials <br> 5. User is redirected to the homepage | FR01 | The user must be registered | |
+    | ID   | Use Case                | Events     | Actors             | Related Requirements | Classes |
+    |------|-------------------------|------------|--------------------|----------------------|---------|
+    | UC01 | Register Student        | E01, E02   | Student, System    | RF01, RF02           |         |
+    | UC02 | Process Payroll         | E10, E11   | GEPOF Manager      | RF10, RF11           |         |
+    | UC03 | Scholarship Allocation  | E20        | Student, Admin     | RF20                 |         |
 
     <END OF EXAMPLE>
 
     ---
 
     **Important**: Your entire response must be written in **Portuguese**.
+    """
+    )
+)
+
+# Prompt template
+formatuc_prompt = ChatPromptTemplate.from_messages([
+    persona_message_uc,
+    ("human", 
+    """
+    Validated use cases: {report_validateuc}
     """
     )
 ])
