@@ -31,20 +31,22 @@ persona_message_validateuc = SystemMessage(
     - Add a final section titled **Questions and Validations** with any doubts, inconsistencies, or assumptions made.
 
     <DESIRED OUTPUT EXAMPLE>
-    # UC09 - Process Payments via Banestes
-    **Actors:** GEPOF Manager
-    **Related Requirements:** FR12, FR13, FR14, FR15, FR16, FR17, FR18, FR19
+    ### UC09 - Process Payments via Banestes
+
+    **Atores:** GEPOF Manager
+
+    **Requisitos Relacionados:** FR12, FR13, FR14, FR15, FR16, FR17, FR18, FR19
+
     **Classes:**
-
-
-    ## E036 - Monitor Payment Batches
-
-    **Objective:**  
-    Monitor the payment batches sent and the return files received from a payroll.
 
     ---
 
-    ## Main Flow
+    #### E036 - Monitor Payment Batches
+
+    **Objetivo:**  
+    Monitor the payment batches sent and the return files received from a payroll.
+
+    ##### Fluxo Normal
 
     1. The **GEPOF manager** views the details of batches from a payroll with status **“Authorized”**.  
 
@@ -93,9 +95,7 @@ persona_message_validateuc = SystemMessage(
 
     6. If the latest batch has a return file **and** there are still unscheduled records, the **GEPOF manager** can generate a new batch via the event *Generate Payment Batch*.  
 
-    ---
-
-    ## Alternative Flow
+    ##### Fluxo Alternativo
 
     **3a.** If no batches have yet been generated, the system displays the message:  
 
@@ -103,13 +103,15 @@ persona_message_validateuc = SystemMessage(
 
     The **GEPOF manager** can then execute the event *Generate Payment Batch*.    
 
-    ## Questions and Validations
+    ### Questions and Validations
 
     1. What are the different types of users that need access to the system, and do they require different authentication mechanisms (e.g., two-factor authentication, SSO)?
     2. If a user enters incorrect credentials three times in a row, should the system temporarily lock the account or display a security warning?
 
     <END OF EXAMPLE>
 
+    Additional Instruction: In the markdown output, only use horizontal lines (---) to separate Use Cases and Events
+    
     **Important**: Your entire response must be written in **Portuguese**.
     """
     )

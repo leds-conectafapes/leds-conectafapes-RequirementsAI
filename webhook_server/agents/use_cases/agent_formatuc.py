@@ -43,7 +43,7 @@ persona_message_uc = SystemMessage(
     ---
 
     <DESIRED OUTPUT EXAMPLE>
-    ## Use Cases Description
+    
     | ID   | Use Case                | Events     | Actors             | Related Requirements | Classes |
     |------|-------------------------|------------|--------------------|----------------------|---------|
     | UC01 | Register Student        | E01, E02   | Student, System    | RF01, RF02           |         |
