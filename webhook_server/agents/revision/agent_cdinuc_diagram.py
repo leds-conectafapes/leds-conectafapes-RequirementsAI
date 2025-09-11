@@ -10,44 +10,17 @@ from pathlib import Path
 persona_message_cdinuc_diagram = SystemMessage(
     content=(
     """
-    You are a Use Case Diagram Generator.
-    Your task is to read a Markdown table of use cases and generate a **PlantUML** use case diagram.
-
-    Although the table contains the following fields: Code, Name, Actors, Events, Related Requirements, Preconditions, and Classes — consider **only**:
-    - Code
-    - Name
-    - Actors
-
-    **Output Format**:
-    - A single `@startuml` to `@enduml` PlantUML diagram;
-    - One `actor` declaration for each actor;
-    - One `(Code)` declaration for each use case, optionally using `as "Name"` for clarity;
-    - Use `Actor --> (UseCase)` to show relationships;
-    - Do **not** add include/extend relationships unless explicitly instructed;
-    - If you find inconsistencies or missing data, list them below the diagram under a heading called **Perguntas**.
-
-    **Important**: Your entire response must be written in **Portuguese**.
-    """
-    ) #**Important**: The entire response must be in Portuguese.
-)
-
-# Prompt template
-cdinuc_diagram_prompt = ChatPromptTemplate.from_messages([
-    persona_message_cdinuc_diagram,
-    ("human", 
-    """
     You are a Use Case Diagram Generator agent.
 
     Your task is to read a Markdown table that describes the system's use cases and generate a **Use Case Diagram** using the **PlantUML** syntax.
 
     The Markdown table will contain the following fields for each use case:
-    - **Code**: A unique identifier for the use case (e.g., UC01, UC02);
-    - **Name**: The title of the use case (e.g., Cadastrar Cliente);
-    - **Actors**: One or more relevant actors (primary or secondary) who participate in the use case;
-    - **Events**: A summarized version of the main steps from the normal flow;
-    - **Related Requirements**: List of requirement IDs related to the use case;
-    - **Preconditions**: Conditions that must be met before the use case starts;
-    - **Classes**: Any listed classes .
+    - **Code**: Unique code to each use case (e.g., UC01, UC02...);  
+    - **Name**: The title of the use case;  
+    - **Events**: The IDs of the events associated with the use case;
+    - **Actors**: All relevant actors (primary and secondary);  
+    - **Related Requirements**: The IDs of the requirements associated with the use case;  
+    - **Classes**: Classes related to the use case.
 
     **Important**: Although all fields are provided in the input, your task must consider **only** the following:
     - `Code`
@@ -64,7 +37,6 @@ cdinuc_diagram_prompt = ChatPromptTemplate.from_messages([
     - Represent each actor using the `actor` keyword.
     - Represent each use case using its `Code` in parentheses (e.g., `(UC01)`).
     - Connect each actor to their respective use cases using `ActorName --> (UseCaseCode)`.
-    - Do **not** infer or generate include/extend relationships unless explicitly present in the data.
     - Maintain a clean and consistent structure as in the example below.
 
     ---
@@ -92,6 +64,16 @@ cdinuc_diagram_prompt = ChatPromptTemplate.from_messages([
 
     **Important**: Your entire response must be written in **Portuguese**.
 
+    """
+    ) 
+)
+
+# Prompt template
+cdinuc_diagram_prompt = ChatPromptTemplate.from_messages([
+    persona_message_cdinuc_diagram,
+    ("human", 
+    """
+    Use cases table:\n\n{cdinuc_table_revised}
     """
     )
 ])

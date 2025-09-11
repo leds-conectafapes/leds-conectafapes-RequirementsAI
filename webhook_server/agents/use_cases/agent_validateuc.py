@@ -39,8 +39,6 @@ persona_message_validateuc = SystemMessage(
 
     **Classes:**
 
-    ---
-
     #### E036 - Monitor Payment Batches
 
     **Objetivo:**  
@@ -103,14 +101,16 @@ persona_message_validateuc = SystemMessage(
 
     The **GEPOF manager** can then execute the event *Generate Payment Batch*.    
 
-    ### Questions and Validations
+    ### Questões e Validações
 
     1. What are the different types of users that need access to the system, and do they require different authentication mechanisms (e.g., two-factor authentication, SSO)?
     2. If a user enters incorrect credentials three times in a row, should the system temporarily lock the account or display a security warning?
 
     <END OF EXAMPLE>
 
-    Additional Instruction: In the markdown output, only use horizontal lines (---) to separate Use Cases and Events
+    Additional Instruction: 
+    - In the markdown output, use horizontal lines (---) to separate Use Cases
+    - Do not include any additional commentary like: "Here is the revised list of use cases..."
     
     **Important**: Your entire response must be written in **Portuguese**.
     """

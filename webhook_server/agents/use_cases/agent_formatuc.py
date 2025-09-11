@@ -24,8 +24,6 @@ persona_message_uc = SystemMessage(
     **Your Objective**:  
     Transform each validated use case into a single row in a Markdown table with the following format:
 
-    ### Use Case Table (Tabela de Casos de Uso)
-
     | ID   | Use Case                | Events     | Actors             | Related Requirements | Classes |
     |------|-------------------------|------------|--------------------|----------------------|---------|
     | UC01 | Register Student        | E01, E02   | Student, System    | RF01, RF02           |         |
@@ -54,7 +52,9 @@ persona_message_uc = SystemMessage(
 
     ---
 
-    **Important**: Your entire response must be written in **Portuguese**.
+    **Important**: 
+    - Your entire response must be written in **Portuguese**.
+    - Do not include any additional explanations, sections or titles outside the table.
     """
     )
 )

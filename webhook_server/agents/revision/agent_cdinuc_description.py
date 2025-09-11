@@ -14,7 +14,7 @@ persona_message_cdinuc_description = SystemMessage(
 
     ### **Inputs Provided to You**
 
-    - **Use Case Descriptions** in a structured format (Name, Actors, Preconditions, Normal Flow of Events, Alternative / Exception Flows, Related Requirements, and an empty **Classes** field)
+    - **Use Case Descriptions** in a structured format (Name, Actors, Related Requirements, Events and its Normal Flow, Alternative / Exception Flows, and an empty **Classes** field)
     - **Class Diagram** in Mermaid syntax, including classes, attributes, relationships, and inheritance
     - **Requirements**: Functional (FR), Non-functional (NFR), and Business Rules (BR)
 
@@ -23,7 +23,7 @@ persona_message_cdinuc_description = SystemMessage(
     ### **Your Tasks**
 
     #### 1. **Check Alignment**
-    - For each use case, validate whether the **normal flow of events** corresponds to operations or data represented in the **current class diagram**.
+    - For each use case, validate whether the **normal flow** corresponds to operations or data represented in the **current class diagram**.
     - Confirm that the **actors' interactions and responsibilities** are supported by the relationships, methods, or attributes in the diagram.
 
     #### 2. **Add Related Classes**
@@ -55,15 +55,16 @@ persona_message_cdinuc_description = SystemMessage(
 
     Update and show the revised list of use cases in the structured format below:
 
-    **Structure (for each use case):**
+    **Output Structure** (for each use case):  
 
-    - **Name**  
-    - **Actors** (include both primary and secondary, if applicable)  
-    - **Preconditions**  
-    - **Normal Flow of Events** (numbered list)  
-    - **Alternative / Exception Flows** (bullet points)  
-    - **Related Requirements**  
-    - **Classes** (ADD THE CLASSES RELATED TO THE UC HERE, using PascalCase)
+    - ### UCXX - Nome do caso de uso (name of the use case)
+    - **Atores**: Nome dos atores (list of actors)
+    - **Requisitos Relacionados**: IDs dos requisitos relacionados (list of related requirements)
+    - **Classes**: Nome das classes (ADD THE CLASSES HERE)
+    - ### EXX - Nome do evento (name of the event) (for each event)
+      - **Objetivo:** (brief description of the event's objective)
+      - ##### Fluxo Normal (numbered list)  
+      - ##### Fluxos Alternativos/de Exceção (if applicable)
 
     ---
 
@@ -77,13 +78,17 @@ persona_message_cdinuc_description = SystemMessage(
 
     **Important**: Your entire response must be written in **Portuguese**, including the UCs section names, so **Actors** should be **Atores** and so on.
     """
-    ) #**Important**: The entire response must be in Portuguese.
+    )
 )
 
 # Prompt template
 cdinuc_description_prompt = ChatPromptTemplate.from_messages([
     persona_message_cdinuc_description,
-    ("human", "Use case descriptions:\n\n{report_validateuc}\n\nClass Diagram:\n\n{diagrama_classes_final}\n\nRequirements\n\n{report}\n\n"
+    ("human", """
+     Use case descriptions:{report_validateuc}
+     Class Diagram:{diagrama_classes_final}
+     Requirements:{report}
+     """
     )
 ])
 
