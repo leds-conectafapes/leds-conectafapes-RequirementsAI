@@ -33,14 +33,16 @@ persona_message_interface = SystemMessage(
         <text here>
 
         ### Casos de Uso
-        - **UC-01 Nome do Caso de Uso**
+        - **UC01. Nome do Caso de Uso**
         - **Atores**: <ator principal>
-        - **Fluxo Principal**:
+        - **Fluxo Normal**:
             1. Passo 1
             2. Passo 2
         - **Fluxo Alternativo(s)** (se houver):
-            - A1: descrição
-            - A2: descrição
+            - 1A: descrição
+            - 1B: descrição
+            - 2A: descrição
+
 
         ---
 
