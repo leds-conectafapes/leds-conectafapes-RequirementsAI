@@ -1,7 +1,7 @@
 from langchain_core.messages import SystemMessage
 from langgraph.prebuilt import create_react_agent
 #from RequirementsAI.webhook_server.app_config import llm_model  # Seu modelo Gemini ou outro
-from webhook_server.app_config import llm_model, parser
+# from webhook_server.app_config import llm_model, parser
 import google.generativeai as genai
 import tomllib
 from pathlib import Path
@@ -20,7 +20,7 @@ persona_message_transcricao = SystemMessage(
 # Node 0: Transcribe audio with Gemini API
 def transcribe_audio_agent(inputs):
     audio_file_path = inputs["video_entrevista"]
-    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+    genai.configure(api_key=inputs["api_key"])
     model_gemini = genai.GenerativeModel("gemini-3-flash-preview")
     if not os.path.exists(audio_file_path):
         raise FileNotFoundError(f"Arquivo de áudio não encontrado: {audio_file_path}")

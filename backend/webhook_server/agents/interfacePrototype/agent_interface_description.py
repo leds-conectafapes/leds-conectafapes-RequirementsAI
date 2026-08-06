@@ -2,7 +2,7 @@ from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
 #from RequirementsAI.webhook_server.app_config import llm_model
 from langchain_core.output_parsers import StrOutputParser
-from webhook_server.app_config import llm_model
+from webhook_server.app_config import get_llm_model
 
 persona_message_interface = SystemMessage(
     content=(
@@ -58,10 +58,12 @@ interface_prompt = ChatPromptTemplate.from_messages([
     "interface prototype:\n\n{interface_prototype}\n\n")
 ])
 
-agent_interface_chain = interface_prompt | llm_model | StrOutputParser()
-
 def interface_description_node(state):
-    resultado = agent_interface_chain.invoke({"cdinuc_description_revised": state["cdinuc_description_revised"], 
-                                            "interface_prototype": state["interface_prototype"]})
+
+    agent_interface_chain = interface_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
+    resultado = agent_interface_chain.invoke({
+        "cdinuc_description_revised": state["cdinuc_description_revised"], 
+        "interface_prototype": state["interface_prototype"]})
 
     return {**state, "interface_description": resultado}

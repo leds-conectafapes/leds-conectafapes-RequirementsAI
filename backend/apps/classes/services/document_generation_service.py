@@ -8,9 +8,10 @@ from ..models import Documento
 from ..serializers import (DocumentoWriteSerializer)
 
 from ..utils import (
-    is_empty_or_null, 
-    send_to_llm, 
-    version_from_another_doc, 
+    get_user_ai_api_key,
+    is_empty_or_null,
+    send_to_llm,
+    version_from_another_doc,
     update_version)
 
 
@@ -28,6 +29,9 @@ class DocumentoGenerationService:
 
         data_documento = payload.get("documento_data")
         audio_path = payload.get("audio_path")
+
+        # Attach per-user or fallback AI key for downstream generation
+        data_documento['api_key'] = get_user_ai_api_key(user)
 
         # Utilizado dentro de send_to_llm
         if audio_path:

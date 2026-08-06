@@ -27,6 +27,7 @@ def preparar_estado_caso_uso(data: dict) -> dict:
         "minimundo": minimundo,
         "old_uc": casosdeuso_anteriores,
         "uc_information": info_casosdeuso,
+        "api_key": data["api_key"]
     }
 
 @traceable(name="Run Use Cases")

@@ -1,7 +1,7 @@
 import datetime
 from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 from langchain_core.output_parsers import StrOutputParser
 import tomllib
 from pathlib import Path
@@ -101,12 +101,13 @@ diagramuc_prompt = ChatPromptTemplate.from_messages([
     )
 ])
 
-# Cadeia de execução do agente
-agent_diagramuc_chain = diagramuc_prompt | llm_model | StrOutputParser()
-
 # Função refinada para o nó
 def diagramuc_node(state):
     print("🔍 Estado recebido no nó de geração de diagrama de casos de uso:", state)
+    
+    # Cadeia de execução do agente
+    agent_diagramuc_chain = diagramuc_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     resultado = agent_diagramuc_chain.invoke({"format_uc": state["format_uc"]})
 
     stringona = ""

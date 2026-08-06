@@ -2,7 +2,7 @@ from langchain_core.messages import SystemMessage
 from langgraph.prebuilt import create_react_agent
 from langchain.prompts import ChatPromptTemplate
 #from RequirementsAI.webhook_server.app_config import llm_model
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 import datetime
 from langchain_core.output_parsers import StrOutputParser
 
@@ -94,8 +94,6 @@ identificacao_prompt = ChatPromptTemplate.from_messages([
      """)
 ])
 
-agent_identificacao_chain = identificacao_prompt | llm_model | StrOutputParser()
-
 def identify_node(state):
     """
     Steps 1 and 2:
@@ -104,6 +102,9 @@ def identify_node(state):
     2. Generate an initial understanding of the classes and their attributes and relations.
     """
     print("🔎 Estado recebido no nó de identificacao:", state)
+
+    agent_identificacao_chain = identificacao_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     resultado = agent_identificacao_chain.invoke({
         "minimundo": state["minimundo"],
         "report_validateuc": state["report_validateuc"],

@@ -6,6 +6,7 @@ from .models import (
     Modulo,
     Documento,
     DocumentoGenerationJob,
+    UserAIConfig,
     DOCS
 )
 from .serializers import (
@@ -13,6 +14,7 @@ from .serializers import (
     ModuloReadSerializer, ModuloWriteSerializer,
     DocumentoReadSerializer, DocumentoWriteSerializer,
     DocumentoGenerationJobSerializer,
+    UserAIConfigSerializer,
     UserRegisterSerializer,
 )
 
@@ -293,6 +295,53 @@ class DocumentoGenerationJobViewSet(ReadOnlyModelViewSet):
     ]
     lookup_field = 'id'
     
+class UserAIConfigView(generics.GenericAPIView):
+    serializer_class = UserAIConfigSerializer
+    authentication_classes = [OAuth2Authentication, SessionAuthentication]
+    permission_classes = [Or(IsAdminUser, IsAuthenticated, TokenHasReadWriteScope)]
+
+    def get_object(self):
+        return UserAIConfig.objects.filter(user=self.request.user).first()
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not instance:
+            return Response({
+                'configured': False,
+                'masked_key': None,
+                'provider': UserAIConfig.Providers.GEMINI,
+            })
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if instance:
+            serializer.save()
+        else:
+            serializer.save(user=request.user)
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        if instance:
+            serializer.save()
+        else:
+            serializer.save(user=request.user)
+        return Response(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not instance:
+            return Response(status=404)
+        instance.delete()
+        return Response(status=204)
+
+
 class UserViewSet(generics.CreateAPIView):
     serializer_class = UserRegisterSerializer
     permissions_classes = [AllowAny]

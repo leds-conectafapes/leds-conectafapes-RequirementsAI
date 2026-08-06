@@ -1,7 +1,7 @@
 import datetime
 from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 from langchain_core.output_parsers import StrOutputParser
 
 # System message em inglês com orientações completas
@@ -125,12 +125,13 @@ identevent_prompt = ChatPromptTemplate.from_messages([
     )
 ])
 
-# Cadeia de execução do agente
-agent_identevent_chain = identevent_prompt | llm_model | StrOutputParser()
-
 # Função refinada para o nó
 def identevent_node(state):
     print("🔍 Estado recebido no nó de identificação de eventos:", state)
+
+    # Cadeia de execução do agente
+    agent_identevent_chain = identevent_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     resultado = agent_identevent_chain.invoke({
         "report": state["report"], 
         "minimundo": state["minimundo"],

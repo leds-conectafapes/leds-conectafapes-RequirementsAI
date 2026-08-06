@@ -4,6 +4,8 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
+from .encryption import EncryptedTextField
+
 
 User = get_user_model()
 
@@ -175,3 +177,26 @@ class DocumentoGenerationJob(models.Model):
         on_delete=models.SET_NULL,
         related_name="generation_jobs"
     )
+
+
+class UserAIConfig(models.Model):
+    class Providers(models.TextChoices):
+        OPENAI = 'openai', _('OpenAI')
+        GEMINI = 'gemini', _('Gemini (Google)')
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='ai_config'
+    )
+    provider = models.CharField(
+        max_length=50,
+        choices=Providers.choices,
+        default=Providers.GEMINI,
+    )
+    api_key = EncryptedTextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'user_ai_config'

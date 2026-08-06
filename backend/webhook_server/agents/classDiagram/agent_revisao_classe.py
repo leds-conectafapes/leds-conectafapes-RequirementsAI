@@ -2,7 +2,7 @@ from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
 #from RequirementsAI.webhook_server.app_config import llm_model
 from langchain_core.output_parsers import StrOutputParser
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 
 persona_message_revisao = SystemMessage(
     content=("""
@@ -143,11 +143,14 @@ revisao_prompt = ChatPromptTemplate.from_messages([
     "Generate **exactly** 1 class diagram ")
 ])
 
-agent_revisao_chain = revisao_prompt | llm_model | StrOutputParser()
-
 def revise_node(state):
-    resultado = agent_revisao_chain.invoke({"diagrama_classes": state["diagrama_classes"], 
-                                            "report":state["report"],
-                                            "report_validateuc": state["report_validateuc"]})
+
+    agent_revisao_chain = revisao_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
+    resultado = agent_revisao_chain.invoke({
+        "diagrama_classes": state["diagrama_classes"], 
+        "report":state["report"],
+        "report_validateuc": state["report_validateuc"]
+    })
     
     return {**state, "diagrama_classes_revisado": resultado}

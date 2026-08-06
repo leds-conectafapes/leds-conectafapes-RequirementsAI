@@ -4,7 +4,8 @@
     "password": "Senha",
     "button": "Entrar",
     "forgot": "Esqueci minha senha",
-    "error": "Usuário ou senha inválidos."
+    "error": "Usuário ou senha inválidos.",
+    "loading": "Entrando..."
   },
   "register": {
     "username": "Usuário",
@@ -19,7 +20,32 @@
   },
   "navigation": {
     "logout": "SAIR",
-    "back": "← Voltar"
+    "back": "← Voltar",
+    "api_key": "CHAVE DE API"
+  },
+  "aiConfig": {
+    "title_configure": "Configurar chave de IA",
+    "title_configured": "Configuração de chave de IA",
+    "manage_description": "Gerencie a chave de API usada para requisições de IA.",
+    "back": "← Voltar",
+    "provider_label": "Fornecedor",
+    "provider_gemini": "Gemini (Google)",
+    "provider_openai": "OpenAI",
+    "api_key_label": "Chave de API",
+    "api_key_placeholder": "Cole sua chave de API aqui",
+    "save_key": "Salvar chave",
+    "saving": "Salvando…",
+    "remove_config": "Remover configuração",
+    "removing": "Removendo…",
+    "current_key_configured": "Chave atual configurada: {maskedKey}",
+    "current_key_warning": "Ao salvar uma nova chave, a chave anterior será substituída.",
+    "configured_usage": "A chave configurada será usada para todas as requisições de IA do usuário.",
+    "error_load": "Não foi possível carregar a configuração. Tente novamente.",
+    "error_invalid_key": "Informe uma chave válida.",
+    "success_saved": "Chave salva com sucesso.",
+    "error_save": "Erro ao salvar a chave. Verifique a conexão e tente novamente.",
+    "success_removed": "Configuração removida.",
+    "error_remove": "Erro ao remover a configuração. Tente novamente."
   },
   "validation": {
     "required": "Este campo é obrigatório.",

@@ -2,7 +2,7 @@ from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
 #from RequirementsAI.webhook_server.app_config import llm_model
 from langchain_core.output_parsers import StrOutputParser
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 
 persona_message_extracao = SystemMessage(
     content=("""
@@ -112,8 +112,10 @@ extracao_prompt = ChatPromptTemplate.from_messages([
     ("human", "draft of classes:\n\n{rascunho_classes}\n\nGenerate **exactly** 1 class diagram ") #Generate **exactly** 3 tables in Markdown format
 ])
 
-agent_extracao_chain = extracao_prompt | llm_model | StrOutputParser()
 
 def extract_node(state):
+
+    agent_extracao_chain = extracao_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     resultado = agent_extracao_chain.invoke({"rascunho_classes": state["rascunho_classes"]})
     return {**state, "diagrama_classes": resultado}

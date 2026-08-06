@@ -1,7 +1,7 @@
 import datetime
 from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 from langchain_core.output_parsers import StrOutputParser
 
 # System message em inglês com orientações completas
@@ -85,12 +85,13 @@ formatuc_prompt = ChatPromptTemplate.from_messages([
     )
 ])
 
-# Cadeia de execução do agente
-agent_formatuc_chain = formatuc_prompt | llm_model | StrOutputParser()
-
 # Função refinada para o nó
 def formatuc_node(state):
     print("🔍 Estado recebido no nó de formatação de casos de uso:", state)
+
+    # Cadeia de execução do agente
+    agent_formatuc_chain = formatuc_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     resultado = agent_formatuc_chain.invoke({"report_validateuc": state["report_validateuc"]})
 
     return {**state, "format_uc": resultado}

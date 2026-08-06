@@ -146,7 +146,7 @@ const entrar = async () => {
           @click="entrar"
         >
           <span v-if="!loading">{{ $t('login.button')}}</span>
-          <span v-else>Entrando...</span>
+          <span v-else>{{ $t('login.loading') }}</span>
         </button>
       </div>
 

@@ -1,7 +1,7 @@
 from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from webhook_server.app_config import llm_model, parser  # Garantindo consistência com seu projeto
+from webhook_server.app_config import get_llm_model, parser  # Garantindo consistência com seu projeto
 
 # System message in English
 persona_message_prioritization = SystemMessage(
@@ -23,9 +23,6 @@ prioritization_prompt = ChatPromptTemplate.from_messages([
     ("human", "Requirements tables:\n\n{requisitos_tabelas}\n\nPlease perform validation and adjustment as instructed.")
 ])
 
-# Chain with model
-agent_prioritization_chain = prioritization_prompt | llm_model | StrOutputParser()
-
 # Node function integrated with the agent
 def prioritize_node(state):
     """
@@ -34,5 +31,9 @@ def prioritize_node(state):
     - Check if there are gaps or questions for the user for refinement.
     """
     print("🔍 State received at prioritization node:", state)
+
+    # Chain with model
+    agent_prioritization_chain = prioritization_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     result = agent_prioritization_chain.invoke({"requisitos_tabelas": state["requisitos_tabelas"]})
     return {**state, "requisitos_priorizados": result}

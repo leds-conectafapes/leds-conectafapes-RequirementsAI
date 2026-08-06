@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 from langchain_core.output_parsers import StrOutputParser
 
 # System message em inglês com orientações completas
@@ -90,13 +90,15 @@ cdinuc_description_prompt = ChatPromptTemplate.from_messages([
     )
 ])
 
-# Cadeia de execução do agente
-agent_cdinuc_description_chain = cdinuc_description_prompt | llm_model | StrOutputParser()
-
 # Função refinada para o nó
 def cdinuc_description_node(state):
-    resultado = agent_cdinuc_description_chain.invoke({"report": state["report"], 
-                                            "diagrama_classes_final": state["diagrama_classes_final"],
-                                            "report_validateuc": state["report_validateuc"]})
+    # Cadeia de execução do agente
+    agent_cdinuc_description_chain = cdinuc_description_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
+    resultado = agent_cdinuc_description_chain.invoke({
+        "report": state["report"], 
+        "diagrama_classes_final": state["diagrama_classes_final"],
+        "report_validateuc": state["report_validateuc"]
+    })
 
     return {**state, "cdinuc_description_revised": resultado}

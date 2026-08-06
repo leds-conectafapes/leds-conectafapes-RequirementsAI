@@ -2,7 +2,7 @@ from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
 #from RequirementsAI.webhook_server.app_config import llm_model
 from langchain_core.output_parsers import StrOutputParser
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 import datetime
 import tomllib
 from pathlib import Path
@@ -154,9 +154,9 @@ refinamento_prompt = ChatPromptTemplate.from_messages([
     ("human", "class diagram:\n\n{diagrama_classes_revisado}\n\nGenerate **exactly** 1 class diagram ")
 ])
 
-agent_refinamento_chain = refinamento_prompt | llm_model | StrOutputParser()
-
 def refine_node(state):
+    agent_refinamento_chain = refinamento_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     resultado = agent_refinamento_chain.invoke({"diagrama_classes_revisado": state["diagrama_classes_revisado"]})
     
     # Gerar nome de arquivo com timestamp

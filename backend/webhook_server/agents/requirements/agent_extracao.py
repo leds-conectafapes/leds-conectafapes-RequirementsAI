@@ -2,7 +2,7 @@ from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
 #from RequirementsAI.webhook_server.app_config import llm_model
 from langchain_core.output_parsers import StrOutputParser
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 
 
 persona_message_extracao = SystemMessage(
@@ -63,9 +63,9 @@ extracao_prompt = ChatPromptTemplate.from_messages([
     ("human", "draft of requirements:\n\n{rascunho_requisitos}\n\nGenerate **exactly** 3 tables ") #Generate **exactly** 3 tables in Markdown format
 ])
 
-agent_extracao_chain = extracao_prompt | llm_model | StrOutputParser()
-
 def extract_node(state):
+    agent_extracao_chain = extracao_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     resultado = agent_extracao_chain.invoke({"rascunho_requisitos": state["rascunho_requisitos"]})
     return {**state, "requisitos_tabelas": resultado}
 

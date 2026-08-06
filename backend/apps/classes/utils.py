@@ -8,7 +8,8 @@ from django.http import Http404
 from pathlib import Path
 
 from .models import (
-    Documento
+    Documento,
+    UserAIConfig
 )
 
 from webhook_server.webhook_server_functions.miniworld_functions import (
@@ -113,16 +114,37 @@ def update_version(doc_old_v: Documento) -> tuple[int, int]:
     return doc_old_v.vMajor, doc_old_v.vMinor + 1
 
 
+def mask_sensitive_data(data: dict) -> dict:
+    if not isinstance(data, dict):
+        return data
+    return {
+        key: ('***REDACTED***' if key == 'api_key' else value)
+        for key, value in data.items()
+    }
+
+
+def get_user_ai_api_key(user):
+    user_config = UserAIConfig.objects.filter(user=user).first()
+    if user_config and user_config.api_key:
+        return user_config.api_key
+
+    return os.getenv('GEMINI_API_KEY') or os.getenv('OPENAI_API_KEY')
+
 
 def send_to_llm(data: dict) -> str | tuple:
     result = None
     path = data.get('audio_path')
-    print(data)
-    
-    
+    redacted_data = mask_sensitive_data(data)
+
+    logger.info('send_to_llm called', extra={'data': redacted_data})
+
+    if not data.get('api_key'):
+        logger.error('Missing api_key in send_to_llm payload', extra={'data': redacted_data})
+        raise ValueError('Nenhuma chave de API para IA foi fornecida para a geração de documentos.')
+
     match (data.get('TipoDocumento')):
         case 'MINIMUNDO':
-            logger.info("MINIMUNDO - início", extra={"data": data})
+            logger.info('MINIMUNDO - início', extra={'data': redacted_data})
 
             try:
                 if not path:
@@ -131,7 +153,7 @@ def send_to_llm(data: dict) -> str | tuple:
 
                 logger.info("Chamando run_mw", extra={"path": path})
 
-                mw_data = run_mw({'video_entrevista': path})
+                mw_data = run_mw({'video_entrevista': path, 'api_key': data.get('api_key')})
 
                 logger.info("Retorno run_mw", extra={"mw_data": mw_data})
 
@@ -186,7 +208,7 @@ def send_to_llm(data: dict) -> str | tuple:
                         if doc.TipoDocumento == 'REQUISITOS':
                             oldRq = doc.arquivo
 
-                    rq_data = run_rq({ 'minimundo': originMw, 'old_requirements':oldRq })
+                    rq_data = run_rq({ 'minimundo': originMw, 'old_requirements':oldRq, 'api_key': data.get('api_key') })
                     if rq_data and isinstance(rq_data, dict):
                         state = next(iter(rq_data.values())) if len(rq_data) == 1 else rq_data
                         result = state.get('report')
@@ -212,7 +234,8 @@ def send_to_llm(data: dict) -> str | tuple:
                     uc_data = run_rev({
                                 'diagrama_classes_final': originCd,
                                 'report': originRq,
-                                'report_validateuc': thisUc
+                                'report_validateuc': thisUc,
+                                'api_key': data.get('api_key')
                             })
 
                     if uc_data and isinstance(uc_data, dict):
@@ -263,7 +286,9 @@ def send_to_llm(data: dict) -> str | tuple:
                         'minimundo': originMw,
                         'report': originRq,
                         'format_uc': originUcTable,
-                        'report_validateuc': originUcDescr })
+                        'report_validateuc': originUcDescr,
+                        'api_key': data.get('api_key')
+                    })
                     if cd_data and isinstance(cd_data, dict):
                         state = next(iter(cd_data.values())) if len(cd_data) == 1 else cd_data
                         result = state.get("diagrama_classes_final")
@@ -290,7 +315,7 @@ def send_to_llm(data: dict) -> str | tuple:
                         elif doc.TipoDocumento == 'DIAGRAMA_CLASSE':
                             originCd = doc.arquivo
 
-                ip_data = run_ip({ 'report': originRq, 'cdinuc_description_revised': originUcDescr, 'ucincd_revised': originCd })
+                ip_data = run_ip({ 'report': originRq, 'cdinuc_description_revised': originUcDescr, 'ucincd_revised': originCd, 'api_key': data.get('api_key')})
                 if ip_data and isinstance(ip_data, dict):
                     state = next(iter(ip_data.values())) if len(ip_data) == 1 else ip_data
                     prototipo_interface = state.get("interface_prototype")
@@ -314,7 +339,7 @@ def send_to_llm(data: dict) -> str | tuple:
                         elif doc.TipoDocumento == 'REQUISITOS':
                             originRq = doc.arquivo
 
-                    uccd_data = run_simplified_uc_cd({ 'minimundo': originMw, 'report': originRq })
+                    uccd_data = run_simplified_uc_cd({ 'minimundo': originMw, 'report': originRq, 'api_key': data.get('api_key') })
 
                     if uccd_data and isinstance(uccd_data, dict):
                         state = next(iter(uccd_data.values())) if len(uccd_data) == 1 else uccd_data

@@ -35,7 +35,8 @@ def preparar_estado_diagrama_classe(data: dict) -> dict:
         "format_uc": tabela_uc,
         "report_validateuc": descricao_uc,
         "old_cd": old_cd,
-        "cd_instruction": cd_instruction
+        "cd_instruction": cd_instruction,
+        "api_key": data["api_key"]
     }
 
 @traceable(name="Run Class Diagram")

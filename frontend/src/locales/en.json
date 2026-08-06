@@ -4,7 +4,8 @@
     "password": "Password",
     "button": "Login",
     "forgot": "Forgot password",
-    "error": "Invalid username or password."
+    "error": "Invalid username or password.",
+    "loading": "Logging in..."
   },
   "register": {
     "username": "Username",
@@ -19,7 +20,32 @@
   },
   "navigation": {
     "logout": "LOGOUT",
-    "back": "← Back"
+    "back": "← Back",
+    "api_key": "API KEY"
+  },
+  "aiConfig": {
+    "title_configure": "Configure AI key",
+    "title_configured": "AI key configuration",
+    "manage_description": "Manage the API key used for AI requests.",
+    "back": "← Back",
+    "provider_label": "Provider",
+    "provider_gemini": "Gemini (Google)",
+    "provider_openai": "OpenAI",
+    "api_key_label": "API key",
+    "api_key_placeholder": "Paste your API key here",
+    "save_key": "Save key",
+    "saving": "Saving…",
+    "remove_config": "Remove configuration",
+    "removing": "Removing…",
+    "current_key_configured": "Current configured key: {maskedKey}",
+    "current_key_warning": "Saving a new key will replace the previous one.",
+    "configured_usage": "The configured key will be used for all user AI requests.",
+    "error_load": "Unable to load configuration. Please try again.",
+    "error_invalid_key": "Please enter a valid key.",
+    "success_saved": "Key saved successfully.",
+    "error_save": "Error saving key. Check connection and try again.",
+    "success_removed": "Configuration removed.",
+    "error_remove": "Error removing configuration. Please try again."
   },
   "validation": {
     "required": "This field is required.",

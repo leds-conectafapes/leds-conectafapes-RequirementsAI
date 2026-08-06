@@ -2,7 +2,7 @@ from langchain_core.messages import SystemMessage
 from langgraph.prebuilt import create_react_agent
 from langchain.prompts import ChatPromptTemplate
 #from RequirementsAI.webhook_server.app_config import llm_model
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 import datetime
 from langchain_core.output_parsers import StrOutputParser
 import tomllib
@@ -50,13 +50,16 @@ minimundo_prompt = ChatPromptTemplate.from_messages([
     """)
 ])
 
-agent_minimundo_chain = minimundo_prompt | llm_model | StrOutputParser()
+# agent_minimundo_chain = minimundo_prompt | llm_model | StrOutputParser()
 
 def generate_minimundo_node(state):
     """
     Step 0:
     - Transcription of the domain narrative.
     """
+
+    agent_minimundo_chain = minimundo_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     resultado = agent_minimundo_chain.invoke({"transcricao": state["transcricao"], "mw_instruction": "", "old_mw":""})
     print("📚 Minimundo gerado:", resultado)
 

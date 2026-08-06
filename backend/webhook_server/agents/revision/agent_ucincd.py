@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 from langchain_core.output_parsers import StrOutputParser
 
 # System message em inglês com orientações completas
@@ -107,11 +107,14 @@ ucincd_prompt = ChatPromptTemplate.from_messages([
     ("human", "class diagram:\n\n{diagrama_classes_final}\n\nrevised use case description:\n\n{cdinuc_description_revised}\n\n")
 ])
 
-# Cadeia de execução do agente
-agent_ucincd_chain = ucincd_prompt | llm_model | StrOutputParser()
-
 # Função refinada para o nó
 def ucincd_node(state):
-    resultado = agent_ucincd_chain.invoke({"cdinuc_description_revised": state["cdinuc_description_revised"], "diagrama_classes_final": state["diagrama_classes_final"]})
+    # Cadeia de execução do agente
+    agent_ucincd_chain = ucincd_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
+    resultado = agent_ucincd_chain.invoke({
+        "cdinuc_description_revised": state["cdinuc_description_revised"],
+        "diagrama_classes_final": state["diagrama_classes_final"]
+    })
 
     return {**state, "ucincd_revised": resultado}

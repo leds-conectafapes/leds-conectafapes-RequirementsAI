@@ -1,7 +1,7 @@
 from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
 #from RequirementsAI.webhook_server.app_config import llm_model
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 from langchain_core.output_parsers import StrOutputParser
 
 # Definição da persona via mensagem de sistema
@@ -74,8 +74,6 @@ analise_prompt = ChatPromptTemplate.from_messages([
     """)
 ])
 
-agent_analise_chain = analise_prompt | llm_model | StrOutputParser()
-
 def analyze_node(state):
     """
     Steps 1 and 2:
@@ -85,6 +83,9 @@ def analyze_node(state):
     2. Generate an initial understanding of the functionalities and related attributes.
     """
     print("🔎 Estado recebido no nó de análise:", state)
+
+    agent_analise_chain = analise_prompt | get_llm_model(state["api_key"]) | StrOutputParser()
+
     resultado = agent_analise_chain.invoke({
         "minimundo": state["minimundo"],
         "info_requirements": state.get("requirements_instruction", ""),

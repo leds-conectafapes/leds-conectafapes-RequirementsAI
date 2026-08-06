@@ -180,7 +180,18 @@ MEDIA_URL = '/media/'
 
 SHARED_UPLOADS_ROOT = os.getenv('SHARED_UPLOADS_ROOT', '/app/shared/uploads')
 MEDIA_ROOT = os.path.join(SHARED_UPLOADS_ROOT, 'media')
-os.makedirs(MEDIA_ROOT, exist_ok=True)
+try:
+    # Attempt to create MEDIA_ROOT if possible. In some environments (CI, containers)
+    # the process may not have permission to create directories under '/' (e.g. '/app').
+    # Avoid raising an exception during settings import; log a warning instead.
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
+except PermissionError:
+    # Do not fail Django startup solely because we couldn't create the shared media dir.
+    import logging
+    logging.getLogger(__name__).warning(
+        'Permission denied while creating MEDIA_ROOT "%s". Ensure SHARED_UPLOADS_ROOT is writable or set to a local path.',
+        MEDIA_ROOT
+    )
 
 REST_FRAMEWORK = {
     'DATETIME_FORMAT': '%d/%m/%Y',
@@ -219,6 +230,7 @@ URL = config('URL')
 URL_VALIDATION = config('URL_VALIDATION')
 
 HASHIDS_SALT = config('HASHIDS_SALT')
+AI_CONFIG_ENCRYPTION_KEY = config('AI_CONFIG_ENCRYPTION_KEY')
 
 LOGGING = {
     "version": 1,

@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage
 from langchain.prompts import ChatPromptTemplate
-from webhook_server.app_config import llm_model, parser
+from webhook_server.app_config import get_llm_model, parser
 from langchain_core.output_parsers import StrOutputParser
 
 # System message em inglês com orientações completas
@@ -64,11 +64,11 @@ cdinuc_table_prompt = ChatPromptTemplate.from_messages([
     )
 ])
 
-# Cadeia de execução do agente
-agent_cdinuc_table_chain = cdinuc_table_prompt | llm_model | StrOutputParser()
-
 # Função refinada para o nó
 def cdinuc_table_node(state):
-    resultado = agent_cdinuc_table_chain.invoke({"cdinuc_description_revised": state["cdinuc_description_revised"]})
+    agent_llm = get_llm_model(state["api_key"])
+    resultado = (cdinuc_table_prompt | agent_llm | StrOutputParser()).invoke({
+        "cdinuc_description_revised": state["cdinuc_description_revised"]
+    })
 
     return {**state, "cdinuc_table_revised": resultado}
