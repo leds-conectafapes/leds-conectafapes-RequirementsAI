@@ -124,11 +124,15 @@ def mask_sensitive_data(data: dict) -> dict:
 
 
 def get_user_ai_api_key(user):
+    """
+    Get the user's configured AI API key.
+    Returns None if the user has not configured a personal API key.
+    Does NOT fall back to environment variables - users must configure their own key.
+    """
     user_config = UserAIConfig.objects.filter(user=user).first()
     if user_config and user_config.api_key:
         return user_config.api_key
-
-    return os.getenv('GEMINI_API_KEY') or os.getenv('OPENAI_API_KEY')
+    return None
 
 
 def send_to_llm(data: dict) -> str | tuple:
@@ -140,7 +144,7 @@ def send_to_llm(data: dict) -> str | tuple:
 
     if not data.get('api_key'):
         logger.error('Missing api_key in send_to_llm payload', extra={'data': redacted_data})
-        raise ValueError('Nenhuma chave de API para IA foi fornecida para a geração de documentos.')
+        raise ValueError('Usuário não configurou uma chave de API de IA. Por favor, configure uma chave na página de configuração antes de gerar documentos.')
 
     match (data.get('TipoDocumento')):
         case 'MINIMUNDO':

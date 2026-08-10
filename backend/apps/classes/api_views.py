@@ -204,6 +204,21 @@ class DocumentoViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
 
     def create(self, request, *args, **kwargs):
+        # Validar se o usuário tem uma chave de API configurada
+        user_config = UserAIConfig.objects.filter(user=request.user).first()
+        if not user_config or not user_config.api_key:
+            logger.warning(
+                "Tentativa de gerar documento sem API key configurada",
+                extra={"user_id": request.user.id, "username": request.user.username}
+            )
+            return Response(
+                {
+                    "error": "Você não configurou uma chave de API de IA. Por favor, configure uma chave antes de gerar documentos.",
+                    "error_code": "NO_AI_API_KEY_CONFIGURED"
+                },
+                status=403
+            )
+
         data = {}
 
         for key, value in request.data.items():

@@ -30,8 +30,16 @@ class DocumentoGenerationService:
         data_documento = payload.get("documento_data")
         audio_path = payload.get("audio_path")
 
-        # Attach per-user or fallback AI key for downstream generation
-        data_documento['api_key'] = get_user_ai_api_key(user)
+        # Validar que o usuário tem uma chave de API configurada
+        user_api_key = get_user_ai_api_key(user)
+        if not user_api_key:
+            raise ValueError(
+                f"Usuário ID {user_id} não tem uma chave de API de IA configurada. "
+                "A geração de documentos requer uma chave de API pessoal configurada."
+            )
+
+        # Attach per-user AI key for downstream generation
+        data_documento['api_key'] = user_api_key
 
         # Utilizado dentro de send_to_llm
         if audio_path:
